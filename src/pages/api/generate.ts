@@ -4,7 +4,7 @@ import { generatePayload, parseOpenAIStream } from '@/utils/openAI'
 import { fetch, ProxyAgent } from 'undici'
 // #vercel-end
 
-const apiKey = import.meta.env.OPENAI_API_KEY
+const apiKeys = import.meta.env.OPENAI_API_KEY
 const https_proxy = import.meta.env.HTTPS_PROXY
 
 export const post: APIRoute = async (context) => {
@@ -14,6 +14,9 @@ export const post: APIRoute = async (context) => {
   if (!messages) {
     return new Response('No input text')
   }
+
+  const arr = apiKeys.split(",");
+  const apiKey = arr[Math.floor(Math.random() * arr.length)];
   const initOptions = generatePayload(apiKey, messages)
   // #vercel-disable-blocks
   if (https_proxy) {
