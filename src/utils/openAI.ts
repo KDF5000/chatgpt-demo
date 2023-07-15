@@ -5,6 +5,7 @@ export const generatePayload = (apiKey: string, messages: ChatMessage[]): Reques
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${apiKey}`,
+    'api-key': `${apiKey}`,
   },
   method: 'POST',
   body: JSON.stringify({
@@ -12,6 +13,10 @@ export const generatePayload = (apiKey: string, messages: ChatMessage[]): Reques
     messages,
     temperature: 0.6,
     stream: true,
+    // for azure
+    frequency_penalty: 0, 
+    presence_penalty: 0,
+    top_p: 0.95,
   }),
 })
 

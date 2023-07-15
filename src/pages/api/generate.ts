@@ -6,6 +6,7 @@ import { fetch, ProxyAgent } from 'undici'
 
 const apiKeys = import.meta.env.OPENAI_API_KEY
 const https_proxy = import.meta.env.HTTPS_PROXY
+const baseUrl = ((import.meta.env.OPENAI_API_BASE_URL) || 'https://api.openai.com/v1').trim().replace(/\/$/, '')
 
 export const post: APIRoute = async (context) => {
   const body = await context.request.json()
@@ -25,7 +26,7 @@ export const post: APIRoute = async (context) => {
   // #vercel-end
 
   // @ts-ignore
-  const response = await fetch('https://api.openai.com/v1/chat/completions', initOptions) as Response
+  const response = await fetch(`${baseUrl}/chat/completions?api-version=2023-03-15-preview`, initOptions) as Response
 
   return new Response(parseOpenAIStream(response))
 }
