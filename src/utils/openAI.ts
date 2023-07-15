@@ -23,6 +23,12 @@ export const generatePayload = (apiKey: string, messages: ChatMessage[]): Reques
 export const parseOpenAIStream = (rawResponse: Response) => {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
+  if (!rawResponse.ok) {
+    return new Response(rawResponse.body, {
+      status: rawResponse.status,
+      statusText: rawResponse.statusText,
+    })
+  }
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -45,6 +51,11 @@ export const parseOpenAIStream = (rawResponse: Response) => {
             // }
             const json = JSON.parse(data)
             const text = json.choices[0].delta?.content || ''
+            const finish = json.choices[0].finish_reason
+            if (finish == "stop") {
+              controller.close()
+              return
+            }
             const queue = encoder.encode(text)
             controller.enqueue(queue)
           } catch (e) {
@@ -54,11 +65,10 @@ export const parseOpenAIStream = (rawResponse: Response) => {
       }
 
       const parser = createParser(streamParser)
-      for await (const chunk of rawResponse.body as any) {
+      for await (const chunk of rawResponse.body as any)
         parser.feed(decoder.decode(chunk))
-      }
     },
   })
 
-  return stream
+  return new Response(stream)
 }

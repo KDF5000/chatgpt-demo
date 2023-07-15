@@ -26,7 +26,15 @@ export const post: APIRoute = async (context) => {
   // #vercel-end
 
   // @ts-ignore
-  const response = await fetch(`${baseUrl}/chat/completions?api-version=2023-03-15-preview`, initOptions) as Response
+  const response = await fetch(`${baseUrl}/chat/completions?api-version=2023-03-15-preview`, initOptions).catch((err: Error) => {
+    console.error(err)
+    return new Response(JSON.stringify({
+      error: {
+        code: err.name,
+        message: err.message,
+      },
+    }), { status: 500 })
+  }) as Response
 
-  return new Response(parseOpenAIStream(response))
+  return parseOpenAIStream(response) as Response
 }

@@ -98,6 +98,10 @@ export default () => {
       setLoading(false)
       setController(null)
       inputRef.focus()
+    } else {
+      setLoading(false)
+      setController(null)
+      inputRef.focus()
     }
   }
 
